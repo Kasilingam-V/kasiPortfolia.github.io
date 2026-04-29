@@ -2548,3 +2548,106 @@ section,
 .starter-section {
   /* Add your styles here */
 }
+
+/* Skill Bubble Style */
+.skill-bubble {
+  background: var(--surface-color);
+  border-radius: 50%;
+  width: 280px;
+  height: 280px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.skill-bubble:hover {
+  transform: translateY(-10px) scale(1.03);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+}
+
+.skill-bubble h3 {
+  margin-bottom: 15px;
+  font-weight: 700;
+}
+
+/* Logo Grid */
+.logo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.logo-grid img {
+  width: 48px;
+  height: auto;
+  filter: grayscale(100%);
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.logo-grid img:hover {
+  filter: grayscale(0%);
+  transform: scale(1.15);
+}
+
+/* Thumbnails */
+.media-thumbs {
+  padding-bottom: 6px;
+}
+
+.thumb {
+  height: 80px;
+  width: auto;
+  border-radius: 8px;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+}
+
+.thumb:hover {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.thumb.active {
+  opacity: 1;
+  border-color: #ffffff;
+}
+
+/* Scrollbar (clean) */
+.media-thumbs::-webkit-scrollbar {
+  height: 6px;
+}
+.media-thumbs::-webkit-scrollbar-thumb {
+  background: #666;
+  border-radius: 10px;
+}
+
+.media-main {
+  position: relative;
+}
+
+.video-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  width: 0%;
+  background: #00ffcc;
+}
+
+.video-time {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(0,0,0,0.7);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #fff;
+}
