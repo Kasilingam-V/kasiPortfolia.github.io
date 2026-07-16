@@ -31,20 +31,39 @@
     border:0;
     object-fit:cover;
 }
+      .media-main img,
+.media-main iframe{
+    animation:fade .25s ease;
+}
+
+@keyframes fade{
+    from{
+        opacity:0;
+        transform:scale(.98);
+    }
+    to{
+        opacity:1;
+        transform:scale(1);
+    }
+} 
       
     
-    .media-thumbs img {
-      height: 80px;
-      border-radius: 8px;
-      cursor: pointer;
-      opacity: 0.5;
-      transition: 0.2s;
-    }
+    .media-thumbs{
+display:flex;
+gap:12px;
+overflow-x:auto;
+padding-bottom:8px;
+scroll-behavior:smooth;
+}
 
-    .media-thumbs img.active {
-      opacity: 1;
-      border: 2px solid #00ffcc;
-    }
+.media-thumbs::-webkit-scrollbar{
+height:8px;
+}
+
+.media-thumbs::-webkit-scrollbar-thumb{
+background:#444;
+border-radius:20px;
+}
 
     .feature-box {
       background:#161b22;
@@ -57,11 +76,31 @@
       margin-bottom:20px;
       display:inline-block;
     }
+      .media-thumbs img{
+    width:160px;
+    height:90px;
+    object-fit:cover;
+    border-radius:10px;
+    cursor:pointer;
+    opacity:.65;
+    transition:.25s;
+    flex-shrink:0;
+}
+
+.media-thumbs img:hover{
+    opacity:1;
+    transform:translateY(-3px);
+}
+
+.media-thumbs img.active{
+    opacity:1;
+    border:3px solid #00d4ff;
+}
   </style>
 </head>
 
 <body>
-
+    
 <div class="container mt-5">
 
   <!-- BACK BUTTON -->
@@ -79,23 +118,26 @@
         <!-- MAIN MEDIA -->
         <div class="media-main mb-3">
 
-      <div class="ratio ratio-16x9 rounded shadow">
     <iframe
+        loading="lazy"
         src="https://www.youtube.com/embed/Qq6CdpPLNmw"
         title="Gameplay Video"
         frameborder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         allowfullscreen>
     </iframe>
+
+    <a href="https://www.youtube.com/watch?v=Qq6CdpPLNmw"
+       target="_blank"
+       class="position-absolute top-0 end-0 m-2 text-white">
+        <i class="bi bi-youtube fs-3"></i>
+    </a>
+
 </div>
 
-<a href="https://www.youtube.com/watch?v=Qq6CdpPLNmw"
-   target="_blank"
-   class="position-absolute top-0 end-0 m-2 text-white">
-    <i class="bi bi-youtube fs-3"></i>
-</a>
-
         </div>
+          
+          
 
         <!-- THUMBNAILS -->
         <div class="media-thumbs d-flex gap-2 overflow-auto">
@@ -244,7 +286,7 @@
 
 </div>
 
-  </div>
+  
 
 </div>
 
@@ -255,6 +297,10 @@
 
 const mainContainer = document.querySelector(".media-main");
 const thumbs = document.querySelectorAll(".thumb");
+
+const lightbox = GLightbox({
+    selector: ".glightbox"
+});
 
 thumbs.forEach(thumb => {
 
@@ -268,18 +314,20 @@ thumbs.forEach(thumb => {
 
         if (type === "youtube") {
 
-            mainContainer.innerHTML = `
-                <div class="ratio ratio-16x9 rounded shadow">
-                    <iframe
-                        src="${src}"
-                        title="Gameplay Video"
-                        frameborder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen>
-                    </iframe>
-                </div>
+            const videoID = src.split("/embed/")[1];
+            const watchURL = `https://www.youtube.com/watch?v=${videoID}`;
 
-                <a href="${src.replace('/embed/', '/watch?v=')}"
+            mainContainer.innerHTML = `
+                <iframe
+                    loading="lazy"
+                    src="${src}"
+                    title="Gameplay Video"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowfullscreen>
+                </iframe>
+
+                <a href="${watchURL}"
                    target="_blank"
                    class="position-absolute top-0 end-0 m-2 text-white">
                     <i class="bi bi-youtube fs-3"></i>
@@ -299,20 +347,12 @@ thumbs.forEach(thumb => {
                 </a>
             `;
 
-            GLightbox({
-                selector: ".glightbox"
-            });
-
+            lightbox.reload();
         }
 
     });
 
 });
-
-GLightbox({
-    selector: ".glightbox"
-});
-
 </script>
 
 </body>
