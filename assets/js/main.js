@@ -232,7 +232,6 @@
 (function () {
   const mainContainer = document.querySelector('.media-main');
   const thumbs = document.querySelectorAll('.media-thumbs .thumb');
-  const lightboxTrigger = document.getElementById('lightboxTrigger');
 
   if (!mainContainer || !thumbs.length) return;
 
@@ -242,108 +241,69 @@
   }
 
   function renderMedia(type, src) {
-    mainContainer.innerHTML = `
-      ${type === 'video'
-        ? `<video id="mainMedia" class="w-100 rounded shadow" controls autoplay>
-             <source src="${src}" type="video/mp4">
-           </video>`
-        : `<img id="mainMedia" src="${src}" class="w-100 rounded shadow" alt="Preview">`
-      }
-      <a id="lightboxTrigger"
-         href="${src}"
-         class="glightbox position-absolute top-0 end-0 m-2 text-white">
-        <i class="bi bi-arrows-fullscreen fs-4"></i>
-      </a>
-    `;
 
-    // Re-init lightbox for new element
+    if (type === 'video') {
+      mainContainer.innerHTML = `
+        <video id="mainMedia"
+               class="w-100 rounded shadow"
+               src="${src}"
+               controls
+               autoplay
+               playsinline></video>
+
+        <a href="${src}"
+           class="glightbox position-absolute top-0 end-0 m-2 text-white">
+          <i class="bi bi-arrows-fullscreen fs-4"></i>
+        </a>
+      `;
+
+      initHoverPreview(); // attach AFTER render
+    } else {
+      mainContainer.innerHTML = `
+        <img src="${src}" class="w-100 rounded shadow">
+
+        <a href="${src}"
+           class="glightbox position-absolute top-0 end-0 m-2 text-white">
+          <i class="bi bi-arrows-fullscreen fs-4"></i>
+        </a>
+      `;
+    }
+
     GLightbox({ selector: '.glightbox' });
   }
 
   thumbs.forEach(thumb => {
     thumb.addEventListener('click', () => {
-      const type = thumb.dataset.type;
-      const src = thumb.dataset.src;
-
       setActiveThumb(thumb);
-      renderMedia(type, src);
+      renderMedia(thumb.dataset.type, thumb.dataset.src);
     });
   });
 
-  // ⌨️ Keyboard navigation (left/right)
-  document.addEventListener('keydown', (e) => {
-    const current = document.querySelector('.thumb.active');
-    if (!current) return;
+  /* 🎮 OPTIONAL: Hover Preview (clean version) */
+  function initHoverPreview() {
+    const video = document.getElementById('mainMedia');
+    if (!video) return;
 
-    const list = Array.from(thumbs);
-    let idx = list.indexOf(current);
+    let hovering = false;
 
-    if (e.key === 'ArrowRight') idx = (idx + 1) % list.length;
-    if (e.key === 'ArrowLeft') idx = (idx - 1 + list.length) % list.length;
+    video.addEventListener('mouseenter', () => {
+      hovering = true;
+      video.pause();
+    });
 
-    const next = list[idx];
-    if (next) next.click();
-  });
-})();
+    video.addEventListener('mouseleave', () => {
+      hovering = false;
+      video.currentTime = 0;
+    });
 
+    video.addEventListener('mousemove', (e) => {
+      if (!hovering || !video.duration) return;
 
-// 🎮 Game-style hover preview
-(function () {
-  let video = document.getElementById('mainMedia');
-  let progress = document.querySelector('.video-progress');
-  let timeLabel = document.querySelector('.video-time');
-
-  if (!video) return;
-
-  let hovering = false;
-    
-  if (type === 'video') {
-  mainContainer.innerHTML = `
-    <video id="mainMedia" class="w-100 rounded shadow"
-      src="${src}" muted preload="metadata" playsinline controls></video>
-    <div class="video-progress"></div>
-    <div class="video-time">0:00</div>
-    <a href="${src}" class="glightbox position-absolute top-0 end-0 m-2 text-white">
-      <i class="bi bi-arrows-fullscreen fs-4"></i>
-    </a>
-  `;
-
-  const video = document.getElementById('mainMedia');
-  video.play().catch(() => {}); // autoplay attempt
-}
-
-  function formatTime(t) {
-    const m = Math.floor(t / 60);
-    const s = Math.floor(t % 60).toString().padStart(2, '0');
-    return `${m}:${s}`;
+      const rect = video.getBoundingClientRect();
+      const percent = (e.clientX - rect.left) / rect.width;
+      video.currentTime = percent * video.duration;
+    });
   }
 
-  video.addEventListener('mouseenter', () => {
-    hovering = true;
-    video.pause();
-  });
-
-  video.addEventListener('mouseleave', () => {
-    hovering = false;
-    video.currentTime = 0;
-    if (progress) progress.style.width = "0%";
-  });
-
-  video.addEventListener('mousemove', (e) => {
-    if (!hovering || !video.duration) return;
-
-    const rect = video.getBoundingClientRect();
-    const percent = (e.clientX - rect.left) / rect.width;
-
-    video.currentTime = percent * video.duration;
-
-    if (progress) {
-      progress.style.width = (percent * 100) + "%";
-    }
-
-    if (timeLabel) {
-      timeLabel.textContent = formatTime(video.currentTime);
-    }
-  });
 })();
 
